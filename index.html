@@ -19,16 +19,24 @@
     <main>
       <div class="info-box">
         <div class="artwork-container">
-          <img src="./default-art.jpg" alt="Default Artwork" draggable="false">
+            <a id="songURL" href="https://soundcloud.com/discover" target="_blank">
+              <img src="./default-art.jpg" alt="Default Artwork" draggable="false">
+            </a>
         </div>
         <div class="song-info">
-          <h2>Unknown Title</h2>
-          <h3>Unknown Artist</h3>
+          <h2 id="title">Unknown Title</h2>
+          <h3 id="artist">Unknown Artist</h3>
         </div>
         <div class="info-container">
-          <button type="submit">Get ID</button>
+          <button id="recordBtn" type="submit">Get ID</button>
         </div>
       </div>
     </main>
+
+    <script src="recorder.js"></script>
+    <script>
+        document.getElementById("recordBtn").addEventListener("click", startRecording);
+    </script>
+
   </body>
 </html>
