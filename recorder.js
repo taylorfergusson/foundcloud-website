@@ -57,6 +57,7 @@ async function sendRecording(audioBlob) {
 function handleServerResponse(data) {
     // Example: Display the result URL
     if (data) {
+        console.log("RESPONSE:", data);
         document.getElementById("artwork").src = data.artworkURL;
         document.getElementById("songURL").href = data.songURL;
         document.getElementById("title").innerText = data.title;
