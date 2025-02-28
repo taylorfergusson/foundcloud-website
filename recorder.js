@@ -57,9 +57,10 @@ async function sendRecording(audioBlob) {
 function handleServerResponse(data) {
     // Example: Display the result URL
     if (data) {
+        document.getElementById("artwork").src = data.artworkURL;
         document.getElementById("songURL").href = data.songURL;
         document.getElementById("title").innerText = data.title;
-        document.getElementById("artist").innerText = data.artist;
+        document.getElementById("username").innerText = data.username;
     } else {
         console.log("Unexpected response:", data);
     }
