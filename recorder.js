@@ -3,6 +3,10 @@ let audioChunks = [];
 
 async function startRecording() {
     try {
+        document.getElementById("buffer").style.display = "block";
+        document.getElementById("audio-status").innerText = "Listening";
+        document.getElementById("song-info").style.display = "none";
+        document.getElementById("get-id").style.display = "none";
         // Request microphone access
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -16,10 +20,16 @@ async function startRecording() {
             audioChunks.push(event.data);
         };
 
-        // Stop recording after 10 seconds
-        setTimeout(() => {
-            mediaRecorder.stop();
-        }, 10000);
+        for (let i = 1; i <= 10; i++) {
+            setTimeout(() => {
+                document.getElementById("audio-status").innerText = `Listening for ${i} seconds`;
+        
+                // Stop recording when reaching 10 seconds
+                if (i === 10) {
+                    mediaRecorder.stop();
+                }
+            }, i * 1000);
+        }
 
         mediaRecorder.onstop = () => {
             const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
@@ -34,6 +44,7 @@ async function startRecording() {
 }
 
 async function sendRecording(audioBlob) {
+    document.getElementById("audio-status").innerText = "Finding match...";
     const formData = new FormData();
     formData.append("file", audioBlob, "recording.wav"); // Append the file
 
@@ -62,6 +73,10 @@ function handleServerResponse(data) {
         document.getElementById("songURL").href = data.songURL;
         document.getElementById("title").innerText = data.title;
         document.getElementById("username").innerText = data.username;
+        document.getElementById("buffer").style.display = "none";
+        document.getElementById("song-info").style.display = "block";
+        document.getElementById("get-id").style.display = "block";
+
     } else {
         console.log("Unexpected response:", data);
     }

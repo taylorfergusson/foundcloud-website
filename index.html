@@ -18,17 +18,19 @@
   <body>
     <main>
       <div class="info-box">
-        <div class="artwork-container">
-            <a id="songURL" href="https://soundcloud.com/discover" target="_blank">
-              <img id="artwork" class="artwork" src="./default-art.jpg" alt="Artwork" draggable="false">
-            </a>
-        </div>
-        <div class="song-info">
+        <div id="song-info" class="song-info" style="display: none;">
+          <a id="songURL" href="https://soundcloud.com/discover" target="_blank">
+            <img id="artwork" class="artwork" src="./default-art.jpg" alt="Artwork" draggable="false">
+          </a>
           <h2 id="title">Unknown Title</h2>
           <h3 id="username">Unknown User</h3>
         </div>
-        <div class="info-container">
+        <div id="get-id" class="get-id-container">
           <button id="recordBtn" type="submit">Get ID</button>
+        </div>
+        <div id="buffer" class="buffer" style="display: none;">
+          <img class="buffer-animation" src="./buffer.png" alt="Buffer" draggable="false">
+          <h2 id="audio-status"></h2>
         </div>
       </div>
     </main>
