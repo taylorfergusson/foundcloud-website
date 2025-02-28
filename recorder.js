@@ -4,7 +4,7 @@ let audioChunks = [];
 async function startRecording() {
     try {
         document.getElementById("buffer").style.display = "block";
-        document.getElementById("audio-status").innerText = "Listening";
+        document.getElementById("audio-status").innerText = "Loading...";
         document.getElementById("song-info").style.display = "none";
         document.getElementById("get-id").style.display = "none";
         // Request microphone access
@@ -20,12 +20,12 @@ async function startRecording() {
             audioChunks.push(event.data);
         };
 
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 11; i++) {
             setTimeout(() => {
                 document.getElementById("audio-status").innerText = `Listening for ${i} seconds`;
         
                 // Stop recording when reaching 10 seconds
-                if (i === 10) {
+                if (i === 11) {
                     mediaRecorder.stop();
                 }
             }, i * 1000);
@@ -68,7 +68,6 @@ async function sendRecording(audioBlob) {
 function handleServerResponse(data) {
     // Example: Display the result URL
     if (data) {
-        console.log("RESPONSE:", data);
         document.getElementById("artwork").src = data.artworkURL;
         document.getElementById("songURL").href = data.songURL;
         document.getElementById("title").innerText = data.title;

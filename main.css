@@ -145,16 +145,17 @@ button:active {
 .get-id-container {
   /* background-color: rgba(255, 255, 255, 0.1); */
   text-align: left;
-  padding: 2rem;
+  padding: 0 2rem;
   border-radius: 0.3rem;
   width: 20rem;
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem; */
 }
 
 .buffer-animation {
   height: 100px;
   width: 100px;
   animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
 .artwork {
@@ -177,5 +178,8 @@ button:active {
 }
 
 .song-info {
-  margin: 2rem 0;
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  gap: 20px; /* Add space between items */
+  align-items: center; /* Center items horizontally (optional) */
 }
