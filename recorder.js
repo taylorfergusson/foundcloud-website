@@ -71,6 +71,7 @@ function handleServerResponse(data) {
         document.getElementById("songURL").href = data.songURL;
         document.getElementById("title").innerText = data.title;
         document.getElementById("username").innerText = data.username;
+        document.getElementById("confidence").innerText = data.confidence;
         document.getElementById("buffer").style.display = "none";
         document.getElementById("song-info").style.display = "block";
         document.getElementById("get-id").style.display = "block";
