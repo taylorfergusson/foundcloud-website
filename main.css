@@ -56,7 +56,8 @@ h3 {
 h4 {
   font-size: 1.5rem;
   font-weight: 400;
-  opacity: 0.5
+  opacity: 0.5;
+  margin-top: 0.5rem
 }
 
 h5 {
@@ -142,7 +143,7 @@ button:active {
   align-items: center;
   text-align: center;
   margin: auto 2rem;
-  height: 100vh;
+  height: 100dvh;
 }
 
 .get-id-container {
