@@ -9,9 +9,9 @@
 }
 
 html {
-  scroll-behavior: smooth;
-  /* background: #000000; */
   background-color: rgb(255, 82, 128);
+  height: 100%;
+  overflow: hidden; /* Prevent scrolling */
 }
 
 body {
@@ -19,6 +19,7 @@ body {
   font-optical-sizing: auto;
   font-style: normal;
   font-size: 1.2rem;
+  font-weight: 400;
   color: white;
 }
 

@@ -13,7 +13,6 @@ async function startRecording() {
         // Set up the media recorder
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.start();
-        document.getElementById("recordBtn").disabled = true; // Disable button during recording
 
         // Collect recorded audio data
         mediaRecorder.ondataavailable = event => {
@@ -32,9 +31,9 @@ async function startRecording() {
         }
 
         mediaRecorder.onstop = () => {
+            stream.getTracks().forEach(track => track.stop()); // Stop mic
             const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
             audioChunks = []; // Clear chunks
-        
             sendRecording(audioBlob); // Send to FastAPI
         };
 
