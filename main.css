@@ -11,7 +11,7 @@
 html {
   background-color: rgb(255, 82, 128);
   height: 100%;
-  overflow: hidden; /* Prevent scrolling */
+  overflow: hidden;
 }
 
 body {
@@ -21,6 +21,8 @@ body {
   font-size: 1.2rem;
   font-weight: 400;
   color: white;
+  height: 100%;
+  overflow: hidden;
 }
 
 canvas {
@@ -150,6 +152,11 @@ button:active {
   border-radius: 0.3rem;
   width: 20rem;
   /* margin-bottom: 2rem; */
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .buffer-animation {
