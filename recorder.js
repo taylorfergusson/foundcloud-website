@@ -1,31 +1,23 @@
-import { MediaRecorder, register } from 'extendable-media-recorder';
-import { connect } from 'extendable-media-recorder-wav-encoder';
-
 let mediaRecorder;
 let audioChunks = [];
 
-export async function startRecording() {
+async function startRecording() {
     try {
         document.getElementById("buffer").style.display = "block";
         document.getElementById("audio-status").innerText = "Loading...";
         document.getElementById("song-info").style.display = "none";
         document.getElementById("get-id").style.display = "none";
-
-        // Register the WAV encoder
-        await register(await connect());
-
         // Request microphone access
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-        // Use the extended MediaRecorder with WAV format
-        mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
+        // Set up the media recorder
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.start();
 
         // Collect recorded audio data
         mediaRecorder.ondataavailable = event => {
             audioChunks.push(event.data);
         };
-
-        mediaRecorder.start();
 
         for (let i = 1; i <= 11; i++) {
             setTimeout(() => {
