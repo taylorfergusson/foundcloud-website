@@ -7,43 +7,17 @@ async function startRecording() {
         document.getElementById("audio-status").innerText = "Loading...";
         document.getElementById("song-info").style.display = "none";
         document.getElementById("get-id").style.display = "none";
-
-        const constraints = {
-            audio: {
-                channelCount: 1, // Force mono audio (1 channel)
-                sampleRate: 44100, // Optional: Set sample rate (default is 48kHz)
-                sampleSize: 16, // Optional: 16-bit depth
-                echoCancellation: true, // Optional: Reduce background noise
-                noiseSuppression: true, // Optional: Reduce background noise
-                autoGainControl: true // Optional: Adjust microphone gain
-            }
-        };
         // Request microphone access
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        const options = { mimeType: "audio/webm; codecs=pcm" };
-
-        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-            console.warn("PCM not supported, falling back to Opus.");
-            options.mimeType = "audio/webm; codecs=opus";
-        }
-
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
         // Set up the media recorder
-        mediaRecorder = new MediaRecorder(stream, options);
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.start();
 
         // Collect recorded audio data
         mediaRecorder.ondataavailable = event => {
             audioChunks.push(event.data);
         };
-
-        mediaRecorder.onstop = () => {
-            stream.getTracks().forEach(track => track.stop()); // Stop mic
-            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-            audioChunks = []; // Clear chunks
-            sendRecording(audioBlob); // Send to FastAPI
-        };
-
-        mediaRecorder.start();
 
         for (let i = 1; i <= 11; i++) {
             setTimeout(() => {
@@ -56,6 +30,12 @@ async function startRecording() {
             }, i * 1000);
         }
 
+        mediaRecorder.onstop = () => {
+            stream.getTracks().forEach(track => track.stop()); // Stop mic
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            audioChunks = []; // Clear chunks
+            sendRecording(audioBlob); // Send to FastAPI
+        };
 
     } catch (error) {
         console.error("Error accessing microphone:", error);
