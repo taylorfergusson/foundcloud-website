@@ -7,8 +7,19 @@ async function startRecording() {
         document.getElementById("audio-status").innerText = "Loading...";
         document.getElementById("song-info").style.display = "none";
         document.getElementById("get-id").style.display = "none";
+
+        const constraints = {
+            audio: {
+                channelCount: 1, // Force mono audio (1 channel)
+                sampleRate: 44100, // Optional: Set sample rate (default is 48kHz)
+                sampleSize: 16, // Optional: 16-bit depth
+                echoCancellation: true, // Optional: Reduce background noise
+                noiseSuppression: true, // Optional: Reduce background noise
+                autoGainControl: true // Optional: Adjust microphone gain
+            }
+        };
         // Request microphone access
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
         const options = { mimeType: "audio/webm; codecs=pcm" };
 
         if (!MediaRecorder.isTypeSupported(options.mimeType)) {
