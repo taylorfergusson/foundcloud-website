@@ -9,30 +9,15 @@ async function startRecording() {
         document.getElementById("get-id").style.display = "none";
         // Request microphone access
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const options = { mimeType: "audio/webm; codecs=pcm" };
-
-        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
-            console.warn("PCM not supported, falling back to Opus.");
-            options.mimeType = "audio/webm; codecs=opus";
-        }
-
 
         // Set up the media recorder
-        mediaRecorder = new MediaRecorder(stream, options);
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.start();
 
         // Collect recorded audio data
         mediaRecorder.ondataavailable = event => {
             audioChunks.push(event.data);
         };
-
-        mediaRecorder.onstop = () => {
-            stream.getTracks().forEach(track => track.stop()); // Stop mic
-            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-            audioChunks = []; // Clear chunks
-            sendRecording(audioBlob); // Send to FastAPI
-        };
-
-        mediaRecorder.start();
 
         for (let i = 1; i <= 11; i++) {
             setTimeout(() => {
@@ -45,6 +30,12 @@ async function startRecording() {
             }, i * 1000);
         }
 
+        mediaRecorder.onstop = () => {
+            stream.getTracks().forEach(track => track.stop()); // Stop mic
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            audioChunks = []; // Clear chunks
+            sendRecording(audioBlob); // Send to FastAPI
+        };
 
     } catch (error) {
         console.error("Error accessing microphone:", error);
