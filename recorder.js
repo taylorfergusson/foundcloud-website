@@ -4,7 +4,7 @@ import { connect } from 'extendable-media-recorder-wav-encoder';
 let mediaRecorder;
 let audioChunks = [];
 
-async function startRecording() {
+export async function startRecording() {
     try {
         document.getElementById("buffer").style.display = "block";
         document.getElementById("audio-status").innerText = "Loading...";

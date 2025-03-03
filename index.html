@@ -39,9 +39,10 @@
       </div>
     </main>
 
-    <script src="recorder.js"></script>
-    <script>
-        document.getElementById("recordBtn").addEventListener("click", startRecording);
+    <script type="module" src="recorder.js"></script>
+    <script type="module">
+      import { startRecording } from './recorder.js';
+      document.getElementById("recordBtn").addEventListener("click", startRecording);
     </script>
 
   </body>
