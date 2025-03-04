@@ -21,31 +21,13 @@
   <body>
     <main>
       <div class="info-box">
-        <div id="song-info" class="song-info" style="display: none;">
-          <a id="songURL" href="https://soundcloud.com/discover" target="_blank">
-            <img id="artwork" class="artwork" src="./default-art.jpg" alt="Artwork" draggable="false">
-          </a>
-          <h2 id="title">Unknown Title</h2>
-          <h3 id="username">Unknown User</h3>
-          <h4 id="confidence">Confidence 0%</h4>
-        </div>
-        <div id="get-id" class="get-id-container">
-          <button id="recordBtn">Get ID</button>
-        </div>
-        <div id="buffer" class="buffer" style="display: none;">
-          <img class="buffer-animation" src="./buffer.png" alt="Buffer" draggable="false">
-          <h3 id="audio-status"></h3>
+        <div class="songs-box">
+          <ol id="songList">
+          </ol>
         </div>
       </div>
-      <a href="songs" class="view-songlist" target="_blank">
-        View Database Song List
-      </a>
     </main>
 
-    <script src="recorder.js"></script>
-    <script>
-        document.getElementById("recordBtn").addEventListener("click", startRecording);
-    </script>
-
+    <script src="getsongs.js"></script>
   </body>
 </html>

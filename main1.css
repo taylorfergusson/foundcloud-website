@@ -120,7 +120,6 @@ button {
   width: 100%;
   margin: 0.5rem 0;
   padding: 1rem 1rem;
-  /* border: 1px solid white; */
   border: none;
   border-radius: 0.3rem;
   cursor: pointer;
@@ -135,8 +134,13 @@ button:active {
   opacity: 0.4;
 }
 
+ol {
+  display: block;
+  list-style-type: decimal; /* Ensures numbers */
+  padding-left: 3rem; /* Space for numbers */
+}
+
 .info-box {
-  /* background-color: rgba(255, 255, 255, 0.1); */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -146,8 +150,17 @@ button:active {
   height: 100dvh;
 }
 
+
+.songs-box {
+  text-align: left;
+  font-size: 1rem;
+  margin: auto;
+  height: 80%;
+  width: 100%;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
 .get-id-container {
-  /* background-color: rgba(255, 255, 255, 0.1); */
   text-align: left;
   padding: 0 2rem;
   border-radius: 0.3rem;
@@ -191,4 +204,13 @@ button:active {
   flex-direction: column; /* Stack items vertically */
   gap: 20px; /* Add space between items */
   align-items: center; /* Center items horizontally (optional) */
+}
+
+.view-songlist {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.3); /* Optional: Adjust text color */
+  font-size: 1rem;
 }
