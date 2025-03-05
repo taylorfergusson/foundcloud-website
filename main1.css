@@ -134,12 +134,6 @@ button:active {
   opacity: 0.4;
 }
 
-ol {
-  display: block;
-  list-style-type: decimal; /* Ensures numbers */
-  padding-left: 3rem; /* Space for numbers */
-}
-
 .info-box {
   display: flex;
   flex-direction: column;
@@ -148,16 +142,6 @@ ol {
   text-align: center;
   margin: auto 2rem;
   height: 100dvh;
-}
-
-
-.songs-box {
-  text-align: left;
-  font-size: 1rem;
-  margin: auto;
-  height: 80%;
-  width: 50%;
-  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .get-id-container {

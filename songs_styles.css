@@ -1,0 +1,43 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  font-size: 16px;
+}
+
+html {
+  background-color: black;
+}
+
+body {
+  font-family: monospace, sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-size: 1vw;
+  font-weight: 400;
+  color: white;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  color: white;
+}
+
+.songs-box {
+  text-align: center;
+}
+
+.songs-box ol {
+  list-style-position: inside;
+}
