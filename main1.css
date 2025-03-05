@@ -156,7 +156,7 @@ ol {
   font-size: 1rem;
   margin: auto;
   height: 80%;
-  width: 100%;
+  width: 50%;
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
