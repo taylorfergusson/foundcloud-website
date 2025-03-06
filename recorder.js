@@ -7,11 +7,21 @@ async function startRecording() {
         document.getElementById("audio-status").innerText = "Loading...";
         document.getElementById("song-info").style.display = "none";
         document.getElementById("get-id").style.display = "none";
+
+        // Check if 'audio/ogg' is supported by the browser
+        if (!MediaRecorder.isTypeSupported('audio/ogg')) {
+            console.error('audio/ogg is not supported in this browser, using audio/webm instead.');
+            // Fall back to 'audio/webm' if 'audio/ogg' isn't supported
+            mimeType = 'audio/webm';
+        } else {
+            mimeType = 'audio/ogg';
+        }
+
         // Request microphone access
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
         // Set up the media recorder
-        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType });
         mediaRecorder.start();
 
         // Collect recorded audio data
@@ -32,7 +42,7 @@ async function startRecording() {
 
         mediaRecorder.onstop = () => {
             stream.getTracks().forEach(track => track.stop()); // Stop mic
-            const audioBlob = new Blob(audioChunks, { type: "audio/ogg" });
+            const audioBlob = new Blob(audioChunks, { type: mimeType });
             audioChunks = []; // Clear chunks
             sendRecording(audioBlob); // Send to FastAPI
         };
@@ -45,7 +55,7 @@ async function startRecording() {
 async function sendRecording(audioBlob) {
     document.getElementById("audio-status").innerText = "Finding match...";
     const formData = new FormData();
-    formData.append("file", audioBlob, "recording.wav"); // Append the file
+    formData.append("file", audioBlob, "recording.ogg"); // Append the file
 
     try {
         const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
