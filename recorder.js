@@ -11,7 +11,7 @@ async function startRecording() {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
         // Set up the media recorder
-        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/ogg" });
         mediaRecorder.start();
 
         // Collect recorded audio data
@@ -32,7 +32,7 @@ async function startRecording() {
 
         mediaRecorder.onstop = () => {
             stream.getTracks().forEach(track => track.stop()); // Stop mic
-            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            const audioBlob = new Blob(audioChunks, { type: "audio/ogg" });
             audioChunks = []; // Clear chunks
             sendRecording(audioBlob); // Send to FastAPI
         };
