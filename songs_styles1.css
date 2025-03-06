@@ -9,14 +9,13 @@
 
 html {
   background-color: black;
-  background-color: blue;
 }
 
 body {
   font-family: "IBM Plex Mono", monospace;
   font-optical-sizing: auto;
   font-style: normal;
-  font-size: 0.7dvw;
+  font-size: 0.65dvw;
   font-weight: 400;
   color: white;
   overflow-x: hidden;
@@ -37,6 +36,8 @@ a:visited {
 }
 
 .songs-box {
+  white-space: nowrap;
+  text-overflow: hidden;
   text-align: center;
 }
 
