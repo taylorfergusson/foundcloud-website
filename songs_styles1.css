@@ -15,9 +15,8 @@ body {
   font-family: "IBM Plex Mono", monospace;
   font-optical-sizing: auto;
   font-style: normal;
-  font-size: 0.8vw;
+  font-size: 0.8dvw;
   font-weight: 400;
-  text-overflow: ellipsis;
   color: white;
 }
 
@@ -37,6 +36,7 @@ a:visited {
 
 .songs-box {
   text-align: center;
+  white-space: nowrap;
 }
 
 .songs-box ol {
