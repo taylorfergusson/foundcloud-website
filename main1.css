@@ -10,6 +10,7 @@
 
 html {
   background-color: rgb(255, 82, 128);
+  background-color: black;
   height: 100%;
   overflow: hidden;
 }
@@ -23,24 +24,6 @@ body {
   color: white;
   height: 100%;
   overflow: hidden;
-}
-
-canvas {
-  display: block;
-}
-
-header {
-  padding-top: 2.5rem;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 0;
-  position: relative;
-}
-
-h1 {
-  font-size: 4.5rem;
-  font-weight: 400;
-  cursor: default;
 }
 
 h2 {
@@ -58,44 +41,6 @@ h4 {
   font-weight: 400;
   opacity: 0.5;
   margin-top: 0.5rem
-}
-
-h5 {
-  font-size: 1rem;
-  cursor: default;
-  transition: 0.3s ease;
-}
-
-nav {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  padding: 0.5rem 20rem;
-  margin-bottom: 4rem;
-}
-
-nav a {
-  padding: 0 3rem;
-}
-
-nav a:hover {
-  opacity: 0.5;
-}
-
-section {
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-section img {
-  width: 100%;
-}
-
-p {
-  font-size: 20px;
-  white-space: pre-line;
 }
 
 a {
