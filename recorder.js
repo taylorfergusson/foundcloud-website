@@ -12,6 +12,7 @@ async function startRecording() {
 
         // Set up the media recorder
         mediaRecorder = new MediaRecorder(stream);
+        // mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
         mediaRecorder.start();
 
         // Collect recorded audio data
@@ -80,3 +81,5 @@ function handleServerResponse(data) {
         console.log("Unexpected response:", data);
     }
 }
+
+document.getElementById("recordBtn").addEventListener("click", startRecording);
