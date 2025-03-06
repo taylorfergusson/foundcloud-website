@@ -18,6 +18,7 @@ body {
   font-size: 0.8dvw;
   font-weight: 400;
   color: white;
+  overflow-x: hidden;
 }
 
 a {
@@ -36,8 +37,6 @@ a:visited {
 
 .songs-box {
   text-align: center;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .songs-box ol {
