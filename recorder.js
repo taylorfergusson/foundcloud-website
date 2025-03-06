@@ -11,7 +11,7 @@ async function startRecording() {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
         // Set up the media recorder
-        mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/ogg" });
+        mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.start();
 
         // Collect recorded audio data
