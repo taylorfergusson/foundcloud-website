@@ -37,6 +37,7 @@ a:visited {
 .songs-box {
   text-align: center;
   white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .songs-box ol {
