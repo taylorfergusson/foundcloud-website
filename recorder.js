@@ -33,7 +33,7 @@ async function startRecording() {
 
         mediaRecorder.onstop = () => {
             stream.getTracks().forEach(track => track.stop()); // Stop mic
-            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
             audioChunks = []; // Clear chunks
             sendRecording(audioBlob); // Send to FastAPI
         };
