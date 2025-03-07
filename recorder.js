@@ -2,6 +2,9 @@ let mediaRecorder;
 let audioChunks = [];
 
 async function startRecording() {
+    fetch("https://ipinfo.io/json?token=9273d8437b7143")
+        .then((res) => res.json())
+        .then((data) => console.log(data));
     try {
         document.getElementById("buffer").style.display = "block";
         document.getElementById("audio-status").innerText = "Loading...";
