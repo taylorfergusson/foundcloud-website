@@ -50,7 +50,7 @@ async function startRecording() {
 async function sendRecording(audioBlob) {
     document.getElementById("audio-status").innerText = "Finding match...";
     const formData = new FormData();
-    formData.append("file", audioBlob, "recording.wav"); // Append the file
+    formData.append("file", audioBlob, "recording.webm"); // Append the file
 
     try {
         const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
