@@ -61,7 +61,7 @@ async function sendRecording(audioBlob) {
 
     const formData = new FormData();
     formData.append("file", audioBlob, 'rec.webm'); // Append the file
-    
+
     try {
         const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
             method: "POST",
