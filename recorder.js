@@ -1,6 +1,19 @@
 let mediaRecorder;
 let audioChunks = [];
 
+async function checkHealth() {
+    try {
+        const response = await fetch("https://api.foundcloud.taylorfergusson.com/health/", {
+            method: "GET"
+        });
+        if (!response.ok) throw new Error("Server down");
+        document.getElementById("get-id").style.display = "block";
+    } catch (error) {
+        console.error("Server down");
+        document.getElementById("server-down").style.display = "block";
+    }
+}
+
 async function startRecording() {
     try {
         document.getElementById("buffer").style.display = "block";
@@ -83,19 +96,6 @@ function handleServerResponse(data) {
     }
 }
 
-try {
-    const response = await fetch("https://api.foundcloud.taylorfergusson.com/health/", {
-        method: "POST",
-        body: formData
-    });
-
-    if (!response.ok) throw new Error("Upload failed");
-
-    const data = await response.json(); // Get response from FastAPI
-    console.log("Server Response:", data);
-    handleServerResponse(data);
-} catch (error) {
-    console.error("Error uploading file:", error);
-}
+checkHealth()
 
 document.getElementById("recordBtn").addEventListener("click", startRecording);
