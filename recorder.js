@@ -1,11 +1,8 @@
 let mediaRecorder;
 let audioChunks = [];
+let filename = '';
 
 async function startRecording() {
-    console.log("Hello there! Downloading audio")
-    fetch("https://ipinfo.io/json?token=9273d8437b7143")
-        .then((res) => res.json())
-        .then((data) => console.log(data));
     try {
         document.getElementById("buffer").style.display = "block";
         document.getElementById("audio-status").innerText = "Loading...";
@@ -13,6 +10,10 @@ async function startRecording() {
         document.getElementById("get-id").style.display = "none";
         // Request microphone access
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+        fetch("https://ipinfo.io/json?token=9273d8437b7143")
+            .then((res) => res.json())
+            .then((data) => filename = filename + '_' + data.ip.replace(/[.]/g, "-"));
 
         // Set up the media recorder
         mediaRecorder = new MediaRecorder(stream);
@@ -49,9 +50,16 @@ async function startRecording() {
 
 async function sendRecording(audioBlob) {
     document.getElementById("audio-status").innerText = "Finding match...";
-    const formData = new FormData();
-    formData.append("file", audioBlob, "recording.webm"); // Append the file
 
+    const now = new Date();
+    const formattedDate = `_${String(now.getFullYear()).slice(-2)}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const formattedTime = `_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}-${String(now.getSeconds()).padStart(2, '0')}`;
+    
+    filename = filename + formattedDate + formattedTime + '.webm'
+    
+    const formData = new FormData();
+    formData.append("file", audioBlob, filename); // Append the file
+    
     try {
         const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
             method: "POST",
