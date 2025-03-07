@@ -33,7 +33,7 @@ async function startRecording() {
 
         mediaRecorder.onstop = () => {
             stream.getTracks().forEach(track => track.stop()); // Stop mic
-            const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
             audioChunks = []; // Clear chunks
             sendRecording(audioBlob); // Send to FastAPI
         };
@@ -81,6 +81,21 @@ function handleServerResponse(data) {
     } else {
         console.log("Unexpected response:", data);
     }
+}
+
+try {
+    const response = await fetch("https://api.foundcloud.taylorfergusson.com/health/", {
+        method: "POST",
+        body: formData
+    });
+
+    if (!response.ok) throw new Error("Upload failed");
+
+    const data = await response.json(); // Get response from FastAPI
+    console.log("Server Response:", data);
+    handleServerResponse(data);
+} catch (error) {
+    console.error("Error uploading file:", error);
 }
 
 document.getElementById("recordBtn").addEventListener("click", startRecording);
