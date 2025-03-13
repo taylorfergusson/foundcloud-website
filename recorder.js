@@ -82,8 +82,8 @@ async function sendRecording(audioBlob) {
 function handleServerResponse(data) {
     // Example: Display the result URL
     if (data) {
-        document.getElementById("artwork").src = data.artworkURL;
-        document.getElementById("songURL").href = data.songURL;
+        document.getElementById("artwork").src = 'https://i1.sndcdn.com/artworks-' + data.artworkURL + '-t500x500.jpg';
+        document.getElementById("songURL").href = 'https://soundcloud.com/' + data.songURL;
         document.getElementById("title").innerText = data.title;
         document.getElementById("username").innerText = data.username;
         document.getElementById("confidence").innerText = data.confidence;
