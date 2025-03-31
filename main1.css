@@ -9,8 +9,7 @@
 }
 
 html {
-  /* background-color: rgb(255, 82, 128); */
-  background-color: black;
+  background-color: rgb(255, 82, 128);
   height: 100%;
   overflow: hidden;
 }
