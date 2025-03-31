@@ -1,14 +1,15 @@
-let mediaRecorder;
-let audioChunks = [];
 let stream;
+// let mediaRecorder;
+// let audioChunks = [];
 let matchFound = false;
+const sampleRate = 44100;
 
 async function checkHealth() {
     try {
-        const response = await fetch("https://api.foundcloud.taylorfergusson.com/health/", {
-            method: "GET"
-        });
-        if (!response.ok) throw new Error("Server down");
+        // const response = await fetch("https://api.foundcloud.taylorfergusson.com/health/", {
+        //     method: "GET"
+        // });
+        //if (!response.ok) throw new Error("Server down");
         document.getElementById("get-id").style.display = "block";
     } catch (error) {
         console.error("Server down");
@@ -17,85 +18,162 @@ async function checkHealth() {
 }
 
 async function startRecording() {
-    try {
-        document.getElementById("buffer").style.display = "block";
-        document.getElementById("audio-status").innerText = "Loading...";
-        document.getElementById("song-info").style.display = "none";
-        document.getElementById("no-matches").style.display = "none";
-        document.getElementById("get-id").style.display = "none";
-        // Request microphone access
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    document.getElementById("buffer").style.display = "block";
+    document.getElementById("audio-status").innerText = "Loading...";
+    document.getElementById("song-info").style.display = "none";
+    document.getElementById("no-matches").style.display = "none";
+    document.getElementById("get-id").style.display = "none";
 
-        // Set up the media recorder
-        mediaRecorder = new MediaRecorder(stream);
-        // mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
+    const audioContext = new AudioContext({
+        sampleRate: sampleRate
+    });
 
-        mediaRecorder.start();
+    await audioContext.audioWorklet.addModule("chunk-processor.js");
 
-        // Collect recorded audio data
-        mediaRecorder.ondataavailable = event => {
-            audioChunks.push(event.data);
-        };
+    // Request microphone access
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-        matchFound = false;
-        let i = 0;
-        const maxLength = 20;
-        const clipLength = 5; // 5 second clips each time
+    const source = audioContext.createMediaStreamSource(stream);
+    const processor = new AudioWorkletNode(audioContext, "chunk-processor");
 
-        const intervalId = setInterval(() => {
-            if (matchFound) {
-                clearInterval(intervalId); // Stop the interval if matchFound is true
-                return; // Exit the interval
-            }
-        
-            document.getElementById("audio-status").innerText = `Listening for ${i + 1} seconds`;
-        
-            if (i !== 0 && i % clipLength === 0) {
-                console.log('STOPPING RECORDER IN INTERVAL ', i);
-                mediaRecorder.stop();
-                if (i < maxLength) {
-                    mediaRecorder.start();
-                } else {
-                    clearInterval(intervalId); // Stop the interval when maxLength is reached
-                    noMatches()
-                }
-            }
+    source.connect(processor);
+    processor.connect(audioContext.destination);
 
-            i++; // Increment the counter
+    matchFound = false;
+    let i = 0;
+    const maxLength = 20;
+    const clipLength = 5; // 5 second clips each time
 
-        }, 1000); // Run every second
-        
-        mediaRecorder.onstop = () => {
-            if (!matchFound) {
-                const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-                sendRecording(audioBlob); // Send to FastAPI
+    const intervalId = setInterval(() => {
+        if (matchFound) {
+            clearInterval(intervalId); // Stop the interval if matchFound is true
+            return; // Exit the interval
+        }
+    
+        document.getElementById("audio-status").innerText = `Listening for ${i + 1} seconds`;
+    
+        if (i !== 0 && i % clipLength === 0) {
+            console.log('STOPPING RECORDER IN INTERVAL ', i);
+            processor.port.postMessage('get-chunks');
+            if (i < maxLength) {
+                console.log("test")
             } else {
-                audioChunks = []; // Clear chunks
+                clearInterval(intervalId); // Stop the interval when maxLength is reached
+                noMatches()
             }
-        };
+        }
 
-    } catch (error) {
-        console.error("Error accessing microphone:", error);
+        i++; // Increment the counter
+
+    }, 1000); // Run every second
+
+    // Handle the chunks sent from the AudioWorkletProcessor
+    processor.port.onmessage = async (event) => {
+        const chunks = event.data;
+        console.log('Received chunks:', chunks);
+        const audioBlob = createWavBlob(chunks)
+
+        if (audioBlob) {
+            sendRecording(audioBlob);
+        } else {
+            console.error("Failed to create a valid audio blob.");
+        }
+    };
+}
+
+function createWavBlob(chunks) {
+    // Flatten all chunks into one array
+    const pcmData = flattenChunks(chunks);
+
+    // Convert the PCM data to 16-bit signed integers
+    const pcm16Bit = new Int16Array(pcmData.length);
+    for (let i = 0; i < pcmData.length; i++) {
+        pcm16Bit[i] = Math.max(-32768, Math.min(32767, pcmData[i] * 32767)); // Normalize to 16-bit PCM
+    }
+
+    // WAV header construction
+    const buffer = new ArrayBuffer(44 + pcm16Bit.length * 2); // 44-byte header + PCM data
+    const view = new DataView(buffer);
+
+    // RIFF header
+    writeString(view, 0, 'RIFF');
+    view.setUint32(4, 36 + pcm16Bit.length * 2, true); // File size - 8 bytes
+    writeString(view, 8, 'WAVE');
+
+    // fmt chunk
+    writeString(view, 12, 'fmt ');
+    view.setUint32(16, 16, true); // Subchunk1Size
+    view.setUint16(20, 1, true); // Audio format (1 = PCM)
+    view.setUint16(22, 1, true); // Number of channels (1 = Mono)
+    view.setUint32(24, 44100, true); // Sample rate (44.1 kHz)
+    view.setUint32(28, 44100 * 2, true); // Byte rate (SampleRate * NumChannels * BitsPerSample/8)
+    view.setUint16(32, 2, true); // Block align (NumChannels * BitsPerSample/8)
+    view.setUint16(34, 16, true); // Bits per sample (16)
+
+    // data chunk
+    writeString(view, 36, 'data');
+    view.setUint32(40, pcm16Bit.length * 2, true); // Data size (num samples * bytes per sample)
+
+    // Write PCM data
+    for (let i = 0; i < pcm16Bit.length; i++) {
+        view.setInt16(44 + i * 2, pcm16Bit[i], true); // Write each sample as 16-bit PCM
+    }
+
+    const audioBlob = new Blob([buffer], { type: 'audio/wav' });
+
+    return audioBlob;
+}
+
+function flattenChunks(chunks) {
+    // Flatten the array of arrays into a single array of PCM samples
+    let flattened = [];
+    for (let i = 0; i < chunks.length; i++) {
+        flattened = flattened.concat(Array.from(chunks[i]));
+    }
+    return flattened;
+}
+
+function writeString(view, offset, string) {
+    for (let i = 0; i < string.length; i++) {
+        view.setUint8(offset + i, string.charCodeAt(i));
     }
 }
 
+
 async function sendRecording(audioBlob) {
-    const formData = new FormData();
-    formData.append("file", audioBlob, 'rec.webm'); // Append the file
+    console.log("IN SEND RECORDING")
+    console.log(audioBlob)
+    const blobUrl = URL.createObjectURL(audioBlob);
 
-    try {
-        const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
-            method: "POST",
-            body: formData
-        });
+    // Create a download link
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = `recording_${Date.now()}.wav`; // Unique filename
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
-        if (!response.ok) throw new Error("Upload failed");
+    // Revoke the URL after a delay to free memory
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
 
-        const data = await response.json(); // Get response from FastAPI
-        handleServerResponse(data);
-    } catch (error) {
-        console.error("Error uploading file:", error);
-    }
+    console.log("Recording saved locally.");
+
+    // const formData = new FormData();
+    // formData.append("file", audioBlob, 'rec.webm'); // Append the file
+
+    // try {
+    //     const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
+    //         method: "POST",
+    //         body: formData
+    //     });
+
+    //     if (!response.ok) throw new Error("Upload failed");
+
+    //     const data = await response.json(); // Get response from FastAPI
+    //     handleServerResponse(data);
+    // } catch (error) {
+    //     console.error("Error uploading file:", error);
+    // }
 }
 
 // Function to handle the server response
