@@ -141,39 +141,39 @@ function writeString(view, offset, string) {
 
 
 async function sendRecording(audioBlob) {
-    console.log("IN SEND RECORDING")
-    console.log(audioBlob)
-    const blobUrl = URL.createObjectURL(audioBlob);
+    // console.log("IN SEND RECORDING")
+    // console.log(audioBlob)
+    // const blobUrl = URL.createObjectURL(audioBlob);
 
-    // Create a download link
-    const a = document.createElement("a");
-    a.href = blobUrl;
-    a.download = `recording_${Date.now()}.wav`; // Unique filename
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    // // Create a download link
+    // const a = document.createElement("a");
+    // a.href = blobUrl;
+    // a.download = `recording_${Date.now()}.wav`; // Unique filename
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
 
-    // Revoke the URL after a delay to free memory
-    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+    // // Revoke the URL after a delay to free memory
+    // setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
 
-    console.log("Recording saved locally.");
+    // console.log("Recording saved locally.");
 
-    // const formData = new FormData();
-    // formData.append("file", audioBlob, 'rec.webm'); // Append the file
+    const formData = new FormData();
+    formData.append("file", audioBlob, 'rec.wav'); // Append the file
 
-    // try {
-    //     const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
-    //         method: "POST",
-    //         body: formData
-    //     });
+    try {
+        const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
+            method: "POST",
+            body: formData
+        });
 
-    //     if (!response.ok) throw new Error("Upload failed");
+        if (!response.ok) throw new Error("Upload failed");
 
-    //     const data = await response.json(); // Get response from FastAPI
-    //     handleServerResponse(data);
-    // } catch (error) {
-    //     console.error("Error uploading file:", error);
-    // }
+        const data = await response.json(); // Get response from FastAPI
+        handleServerResponse(data);
+    } catch (error) {
+        console.error("Error uploading file:", error);
+    }
 }
 
 // Function to handle the server response
