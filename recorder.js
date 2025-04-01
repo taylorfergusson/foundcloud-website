@@ -35,9 +35,11 @@ async function startRecording() {
 
     const source = audioContext.createMediaStreamSource(stream);
     const processor = new AudioWorkletNode(audioContext, "chunk-processor");
+    let totalChunks = 0;
 
     source.connect(processor);
     processor.connect(audioContext.destination);
+    let totalBitArray = new Int16Array(0);
 
     matchFound = false;
     let i = 0;
@@ -74,7 +76,8 @@ async function startRecording() {
     processor.port.onmessage = async (event) => {
         const chunks = event.data;
         console.log('Received chunks:', chunks.length);
-        const audioBlob = createWavBlob(chunks)
+        totalBitArray = addNewChunks(chunks, totalBitArray)
+        const audioBlob = createWavBlob(totalBitArray)
 
         if (audioBlob) {
             sendRecording(audioBlob);
@@ -84,7 +87,7 @@ async function startRecording() {
     };
 }
 
-function createWavBlob(chunks) {
+function addNewChunks(chunks, prevBitArray) {
     // Flatten all chunks into one array
     const pcmData = flattenChunks(chunks);
 
@@ -94,6 +97,14 @@ function createWavBlob(chunks) {
         pcm16Bit[i] = Math.max(-32768, Math.min(32767, pcmData[i] * 32767)); // Normalize to 16-bit PCM
     }
 
+    let mergedArray = new Int16Array(prevBitArray.length + pcm16Bit.length);
+    mergedArray.set(prevBitArray);  // Copy array1 into mergedArray
+    mergedArray.set(pcm16Bit, prevBitArray.length);
+
+    return mergedArray;
+}
+
+function createWavBlob(pcm16Bit) {
     // WAV header construction
     const buffer = new ArrayBuffer(44 + pcm16Bit.length * 2); // 44-byte header + PCM data
     const view = new DataView(buffer);
@@ -126,6 +137,49 @@ function createWavBlob(chunks) {
 
     return audioBlob;
 }
+
+// function createWavBlob(chunks) {
+//     // Flatten all chunks into one array
+//     const pcmData = flattenChunks(chunks);
+
+//     // Convert the PCM data to 16-bit signed integers
+//     const pcm16Bit = new Int16Array(pcmData.length);
+//     for (let i = 0; i < pcmData.length; i++) {
+//         pcm16Bit[i] = Math.max(-32768, Math.min(32767, pcmData[i] * 32767)); // Normalize to 16-bit PCM
+//     }
+
+//     // WAV header construction
+//     const buffer = new ArrayBuffer(44 + pcm16Bit.length * 2); // 44-byte header + PCM data
+//     const view = new DataView(buffer);
+
+//     // RIFF header
+//     writeString(view, 0, 'RIFF');
+//     view.setUint32(4, 36 + pcm16Bit.length * 2, true); // File size - 8 bytes
+//     writeString(view, 8, 'WAVE');
+
+//     // fmt chunk
+//     writeString(view, 12, 'fmt ');
+//     view.setUint32(16, 16, true); // Subchunk1Size
+//     view.setUint16(20, 1, true); // Audio format (1 = PCM)
+//     view.setUint16(22, 1, true); // Number of channels (1 = Mono)
+//     view.setUint32(24, 44100, true); // Sample rate (44.1 kHz)
+//     view.setUint32(28, 44100 * 2, true); // Byte rate (SampleRate * NumChannels * BitsPerSample/8)
+//     view.setUint16(32, 2, true); // Block align (NumChannels * BitsPerSample/8)
+//     view.setUint16(34, 16, true); // Bits per sample (16)
+
+//     // data chunk
+//     writeString(view, 36, 'data');
+//     view.setUint32(40, pcm16Bit.length * 2, true); // Data size (num samples * bytes per sample)
+
+//     // Write PCM data
+//     for (let i = 0; i < pcm16Bit.length; i++) {
+//         view.setInt16(44 + i * 2, pcm16Bit[i], true); // Write each sample as 16-bit PCM
+//     }
+
+//     const audioBlob = new Blob([buffer], { type: 'audio/wav' });
+
+//     return audioBlob;
+// }
 
 function flattenChunks(chunks) {
     // Flatten the array of arrays into a single array of PCM samples
