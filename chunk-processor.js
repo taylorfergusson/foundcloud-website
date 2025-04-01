@@ -33,7 +33,7 @@ class ChunkProcessor extends AudioWorkletProcessor {
             console.warn("YAY! Posting chunks");
             console.log('Time:', time);
             this.port.postMessage(this.chunks);
-            this.chunks = [];
+            // this.chunks = [];
         } else {
             console.warn("Chunks are empty or not populated.");
         }
