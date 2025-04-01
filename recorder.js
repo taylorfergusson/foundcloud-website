@@ -165,7 +165,7 @@ async function sendRecording(audioBlob, clipNum) {
 
     const formData = new FormData();
     formData.append("file", audioBlob, 'rec.wav'); // Append the file
-    formData.append("clipNum", clipNum)
+    formData.append("clipNum", String(clipNum))
 
     try {
         const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
