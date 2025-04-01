@@ -10,7 +10,7 @@ async function checkHealth() {
             method: "GET"
         });
         if (!response.ok) throw new Error("Server down");
-        // document.getElementById("get-id").style.display = "block";
+        document.getElementById("get-id").style.display = "block";
     } catch (error) {
         console.error("Server down");
         document.getElementById("server-down").style.display = "block";
@@ -19,7 +19,6 @@ async function checkHealth() {
 
 async function startRecording() {
     checkHealth();
-    document.getElementById("buffer").style.display = "block";
     document.getElementById("audio-status").innerText = "Loading...";
     document.getElementById("song-info").style.display = "none";
     document.getElementById("no-matches").style.display = "none";
