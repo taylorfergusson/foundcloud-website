@@ -1,7 +1,7 @@
 let stream;
-// let mediaRecorder;
-// let audioChunks = [];
+let audioContext;
 let matchFound = false;
+let clipNum = 1;
 const sampleRate = 44100;
 
 async function checkHealth() {
@@ -24,7 +24,11 @@ async function startRecording() {
     document.getElementById("no-matches").style.display = "none";
     document.getElementById("get-id").style.display = "none";
 
-    const audioContext = new AudioContext({
+    if (audioContext) {
+        audioContext.close()
+    }
+    
+    audioContext = new AudioContext({
         sampleRate: sampleRate
     });
 
@@ -40,7 +44,8 @@ async function startRecording() {
     processor.connect(audioContext.destination);
 
     matchFound = false;
-    let clipNum = 1;
+    clipNum = 1;
+
     let i = 0;
     const maxLength = 20;
     const clipLength = 5; // 5 second clips each time
@@ -76,11 +81,7 @@ async function startRecording() {
         const audioBlob = createWavBlob(chunks)
 
         if (audioBlob) {
-            await sendRecording(audioBlob, clipNum);
-            if (clipNum === 4) {
-                audioContext.close()
-                noMatches()
-            }
+            sendRecording(audioBlob, clipNum);
             clipNum++;
         } else {
             console.error("Failed to create a valid audio blob.");
@@ -189,6 +190,10 @@ function handleServerResponse(data) {
     // Example: Display the result URL
     if (Object.keys(data).length === 0) {
         console.log("No matches received from server:", data);
+        if (clipNum === 4) {
+            audioContext.close()
+            noMatches()
+        }
     } else {
         console.log("Received data from server:", data)
         matchFound = true;
