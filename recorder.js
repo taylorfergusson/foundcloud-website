@@ -47,6 +47,7 @@ async function startRecording() {
     const intervalId = setInterval(() => {
         if (matchFound) {
             clearInterval(intervalId); // Stop the interval if matchFound is true
+            audioContext.close()
             return; // Exit the interval
         }
     
@@ -59,6 +60,7 @@ async function startRecording() {
                 console.log("test")
             } else {
                 clearInterval(intervalId); // Stop the interval when maxLength is reached
+                audioContext.close()
                 noMatches()
             }
         }
