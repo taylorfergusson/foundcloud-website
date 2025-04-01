@@ -40,6 +40,7 @@ async function startRecording() {
     processor.connect(audioContext.destination);
 
     matchFound = false;
+    let newSession = "true"
     let i = 0;
     const maxLength = 20;
     const clipLength = 5; // 5 second clips each time
@@ -77,7 +78,8 @@ async function startRecording() {
         const audioBlob = createWavBlob(chunks)
 
         if (audioBlob) {
-            sendRecording(audioBlob);
+            sendRecording(audioBlob, newSession);
+            newSession = "false";
         } else {
             console.error("Failed to create a valid audio blob.");
         }
@@ -143,7 +145,7 @@ function writeString(view, offset, string) {
 }
 
 
-async function sendRecording(audioBlob) {
+async function sendRecording(audioBlob, newSession) {
     // console.log("IN SEND RECORDING")
     // console.log(audioBlob)
     // const blobUrl = URL.createObjectURL(audioBlob);
@@ -163,6 +165,7 @@ async function sendRecording(audioBlob) {
 
     const formData = new FormData();
     formData.append("file", audioBlob, 'rec.wav'); // Append the file
+    formData.append("newSession", newSession)
 
     try {
         const response = await fetch("https://api.foundcloud.taylorfergusson.com/upload/", {
