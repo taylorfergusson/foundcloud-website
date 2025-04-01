@@ -97,6 +97,7 @@ function addNewChunks(chunks, prevBitArray) {
         pcm16Bit[i] = Math.max(-32768, Math.min(32767, pcmData[i] * 32767)); // Normalize to 16-bit PCM
     }
 
+    console.log('Merging array');
     let mergedArray = new Int16Array(prevBitArray.length + pcm16Bit.length);
     mergedArray.set(prevBitArray);  // Copy array1 into mergedArray
     mergedArray.set(pcm16Bit, prevBitArray.length);
