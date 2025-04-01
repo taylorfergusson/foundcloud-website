@@ -190,7 +190,7 @@ function handleServerResponse(data) {
     // Example: Display the result URL
     if (Object.keys(data).length === 0) {
         console.log("No matches received from server:", data);
-        if (clipNum === 4) {
+        if (clipNum > 4) {
             audioContext.close()
             noMatches()
         }
@@ -210,7 +210,7 @@ function handleServerResponse(data) {
 }
 
 function noMatches() {
-    console.log('No matches found');
+    console.log('No matches found -- Done');
     stream.getTracks().forEach(track => track.stop()); // Stop mic
     document.getElementById("buffer").style.display = "none";
     document.getElementById("no-matches").style.display = "block";
