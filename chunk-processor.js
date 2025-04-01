@@ -1,3 +1,5 @@
+let time = 0;
+
 // Define the AudioWorkletProcessor class
 class ChunkProcessor extends AudioWorkletProcessor {
     constructor() {
@@ -19,6 +21,7 @@ class ChunkProcessor extends AudioWorkletProcessor {
             //console.log("Captured audio chunk:", channelData);
             // Store the audio chunk
             this.chunks.push(channelData.slice()); // Make a copy of the audio data
+            time++;
         }
         // Keep the processor running
         return true;
@@ -28,6 +31,7 @@ class ChunkProcessor extends AudioWorkletProcessor {
         // Ensure chunks is defined and populated
         if (this.chunks.length > 0) {
             console.warn("YAY! Posting chunks");
+            console.log('Time:', time);
             this.port.postMessage(this.chunks);
             this.chunks = [];
         } else {
