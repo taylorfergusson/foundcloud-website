@@ -41,11 +41,12 @@ async function startRecording() {
 
     matchFound = false;
     let i = 0;
-    const maxLength = 10;
+    const maxLength = 20;
     const clipLength = 5; // 5 second clips each time
 
     const intervalId = setInterval(() => {
         if (matchFound) {
+            console.log('Match found');
             clearInterval(intervalId); // Stop the interval if matchFound is true
             audioContext.close()
             return; // Exit the interval
@@ -199,6 +200,7 @@ function handleServerResponse(data) {
 }
 
 function noMatches() {
+    console.log('No matches found');
     stream.getTracks().forEach(track => track.stop()); // Stop mic
     document.getElementById("buffer").style.display = "none";
     document.getElementById("no-matches").style.display = "block";
