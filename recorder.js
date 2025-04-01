@@ -18,7 +18,6 @@ async function checkHealth() {
 }
 
 async function startRecording() {
-    checkHealth();
     document.getElementById("audio-status").innerText = "Loading...";
     document.getElementById("song-info").style.display = "none";
     document.getElementById("no-matches").style.display = "none";
