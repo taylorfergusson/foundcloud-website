@@ -6,11 +6,11 @@ const sampleRate = 44100;
 
 async function checkHealth() {
     try {
-        // const response = await fetch("https://api.foundcloud.taylorfergusson.com/health/", {
-        //     method: "GET"
-        // });
-        //if (!response.ok) throw new Error("Server down");
-        document.getElementById("get-id").style.display = "block";
+        const response = await fetch("https://api.foundcloud.taylorfergusson.com/health/", {
+            method: "GET"
+        });
+        if (!response.ok) throw new Error("Server down");
+        // document.getElementById("get-id").style.display = "block";
     } catch (error) {
         console.error("Server down");
         document.getElementById("server-down").style.display = "block";
