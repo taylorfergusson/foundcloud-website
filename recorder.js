@@ -70,7 +70,7 @@ async function startRecording() {
     // Handle the chunks sent from the AudioWorkletProcessor
     processor.port.onmessage = async (event) => {
         const chunks = event.data;
-        console.log('Received chunks:', chunks);
+        console.log('Received chunks:', chunks.length);
         const audioBlob = createWavBlob(chunks)
 
         if (audioBlob) {

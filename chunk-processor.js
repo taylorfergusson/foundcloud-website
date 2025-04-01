@@ -27,7 +27,7 @@ class ChunkProcessor extends AudioWorkletProcessor {
     sendChunks() {
         // Ensure chunks is defined and populated
         if (this.chunks.length > 0) {
-            console.warn("YAYYYYYY");
+            console.warn("YAY! Posting chunks");
             this.port.postMessage(this.chunks);
             this.chunks = [];
         } else {
