@@ -41,7 +41,7 @@ async function startRecording() {
 
     matchFound = false;
     let i = 0;
-    const maxLength = 20;
+    const maxLength = 10;
     const clipLength = 5; // 5 second clips each time
 
     const intervalId = setInterval(() => {
