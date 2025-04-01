@@ -62,8 +62,6 @@ async function startRecording() {
                 console.log("test")
             } else {
                 clearInterval(intervalId); // Stop the interval when maxLength is reached
-                audioContext.close()
-                noMatches()
             }
         }
 
@@ -78,7 +76,11 @@ async function startRecording() {
         const audioBlob = createWavBlob(chunks)
 
         if (audioBlob) {
-            sendRecording(audioBlob, clipNum);
+            await sendRecording(audioBlob, clipNum);
+            if (clipNum === 4) {
+                audioContext.close()
+                noMatches()
+            }
             clipNum++;
         } else {
             console.error("Failed to create a valid audio blob.");
