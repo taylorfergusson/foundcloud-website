@@ -217,5 +217,6 @@ function noMatches() {
     document.getElementById("get-id").style.display = "block";
 }
 
-checkHealth()
+// checkHealth()
+document.getElementById("get-id").style.display = "block";
 document.getElementById("recordBtn").addEventListener("click", startRecording);
