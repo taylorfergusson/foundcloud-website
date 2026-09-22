@@ -4,6 +4,10 @@ let matchFound = false;
 let clipNum = 1;
 const sampleRate = 44100;
 
+let analyser, eqRafId, eqRunning = false;
+let recordingIntervalId;
+const eqBars = document.querySelectorAll('#equalizer span');
+
 async function checkHealth() {
     try {
         const response = await fetch("https://api.foundcloud.taylorfergusson.com/health/", {
@@ -18,14 +22,14 @@ async function checkHealth() {
 }
 
 async function startRecording() {
-    document.getElementById("buffer").style.display = "block";
-    document.getElementById("audio-status").innerText = "Loading...";
+    document.getElementById("listening").style.display = "block";
+    document.getElementById("audio-status").innerText = "Loading";
     document.getElementById("song-info").style.display = "none";
     document.getElementById("no-matches").style.display = "none";
     document.getElementById("get-id").style.display = "none";
 
-    if (audioContext) {
-        audioContext.close()
+    if (audioContext && audioContext.state !== 'closed') {
+        await audioContext.close();
     }
     
     audioContext = new AudioContext({
@@ -43,6 +47,8 @@ async function startRecording() {
     source.connect(processor);
     processor.connect(audioContext.destination);
 
+    startEqualizer(source, audioContext);
+
     matchFound = false;
     clipNum = 1;
 
@@ -50,11 +56,13 @@ async function startRecording() {
     const maxLength = 20;
     const clipLength = 5; // 5 second clips each time
 
-    const intervalId = setInterval(() => {
+    recordingIntervalId = setInterval(() => {
         if (matchFound) {
             console.log('Match found');
-            clearInterval(intervalId); // Stop the interval if matchFound is true
-            audioContext.close()
+            clearInterval(recordingIntervalId); // Stop the interval if matchFound is true
+            if (audioContext.state !== 'closed') {
+                audioContext.close();
+            }
             return; // Exit the interval
         }
     
@@ -66,7 +74,7 @@ async function startRecording() {
             if (i < maxLength) {
                 console.log("test")
             } else {
-                clearInterval(intervalId); // Stop the interval when maxLength is reached
+                clearInterval(recordingIntervalId); // Stop the interval when maxLength is reached
             }
         }
 
@@ -147,25 +155,7 @@ function writeString(view, offset, string) {
     }
 }
 
-
 async function sendRecording(audioBlob, clipNum) {
-    // console.log("IN SEND RECORDING")
-    // console.log(audioBlob)
-    // const blobUrl = URL.createObjectURL(audioBlob);
-
-    // // Create a download link
-    // const a = document.createElement("a");
-    // a.href = blobUrl;
-    // a.download = `recording_${Date.now()}.wav`; // Unique filename
-    // document.body.appendChild(a);
-    // a.click();
-    // document.body.removeChild(a);
-
-    // // Revoke the URL after a delay to free memory
-    // setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-
-    // console.log("Recording saved locally.");
-
     const formData = new FormData();
     formData.append("file", audioBlob, 'rec.wav'); // Append the file
     formData.append("clipNum", String(clipNum))
@@ -191,30 +181,60 @@ function handleServerResponse(data) {
     if (Object.keys(data).length === 0) {
         console.log("No matches received from server:", data);
         if (clipNum > 4) {
-            audioContext.close()
+            clearInterval(recordingIntervalId);
+            if (audioContext.state !== 'closed') {
+                audioContext.close();
+            }
             noMatches()
         }
     } else {
         console.log("Received data from server:", data)
         matchFound = true;
+        clearInterval(recordingIntervalId);
         stream.getTracks().forEach(track => track.stop()); // Stop mic
-        document.getElementById("artwork").src = 'https://i1.sndcdn.com/artworks-' + data.artwork_path + '-t500x500.jpg';
-        document.getElementById("songURL").href = 'https://soundcloud.com/' + data.song_path;
-        document.getElementById("title").innerText = data.title;
-        document.getElementById("username").innerText = data.username;
-        document.getElementById("confidence").innerText = data.confidence;
-        document.getElementById("buffer").style.display = "none";
-        document.getElementById("song-info").style.display = "block";
-        document.getElementById("get-id").style.display = "block";
+        stopEqualizer();
     }
 }
 
 function noMatches() {
     console.log('No matches found -- Done');
     stream.getTracks().forEach(track => track.stop()); // Stop mic
-    document.getElementById("buffer").style.display = "none";
+    stopEqualizer();
+    document.getElementById("listening").style.display = "none";
     document.getElementById("no-matches").style.display = "block";
     document.getElementById("get-id").style.display = "block";
+}
+
+function startEqualizer(sourceNode, ctx) {
+  if (eqRunning) {
+    stopEqualizer(); // cancel any previous loop before starting a new one
+  }
+  eqRunning = true;
+
+  analyser = ctx.createAnalyser();
+  analyser.fftSize = 32; // small = fewer, chunkier bands; matches 5 bars well
+  sourceNode.connect(analyser);
+
+  document.getElementById('equalizer').style.display = 'flex';
+  const data = new Uint8Array(analyser.frequencyBinCount);
+
+  function draw() {
+    analyser.getByteFrequencyData(data);
+    eqBars.forEach((bar, i) => {
+      const value = data[i] || 0;
+      const height = Math.max(10, (value / 255) * 60); // 10 = matches the CSS resting height
+      bar.style.height = `${height}px`;
+    });
+    eqRafId = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function stopEqualizer() {
+  eqRunning = false;
+  cancelAnimationFrame(eqRafId);
+  document.getElementById('equalizer').style.display = 'none';
+  eqBars.forEach(bar => (bar.style.height = '10px'));
 }
 
 // checkHealth()

@@ -12,11 +12,11 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>FoundCloud</title>
-    <link rel="stylesheet" href="./main1.css">
+    <link rel="stylesheet" href="./main2.css">
     <link rel="icon" href="https://www.taylorfergusson.com/img/icons/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
   </head>
   <body>
     <main>
@@ -29,8 +29,10 @@
           <h3 id="username">Unknown User</h3>
           <h4 id="confidence">Confidence 0%</h4>
         </div>
-        <div id="buffer" class="buffer" style="display: none;">
-          <img class="buffer-animation" src="./buffer.png" alt="Buffer" draggable="false">
+        <div id="listening" style="display: none;">
+          <div id="equalizer" class="equalizer">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
           <h3 id="audio-status"></h3>
         </div>
         <div id="server-down" style="display: none;">
@@ -48,7 +50,7 @@
         </div>
       </div>
       <a href="songs" class="view-songlist" target="_blank">
-        View Database Song List
+        Song Database
       </a>
     </main>
 
