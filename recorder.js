@@ -6,6 +6,8 @@ const sampleRate = 44100;
 
 let analyser, eqRafId, eqRunning = false;
 let recordingIntervalId;
+let responsesReceived = 0;
+const TOTAL_CLIPS = 4; // maxLength / clipLength inside startRecording
 const eqBars = document.querySelectorAll('#equalizer span');
 
 async function checkHealth() {
@@ -51,6 +53,7 @@ async function startRecording() {
 
     matchFound = false;
     clipNum = 1;
+    responsesRecived = 0;
 
     let i = 0;
     const maxLength = 20;
@@ -172,27 +175,43 @@ async function sendRecording(audioBlob, clipNum) {
         handleServerResponse(data);
     } catch (error) {
         console.error("Error uploading file:", error);
+        checkIfDone();
     }
 }
 
 // Function to handle the server response
 function handleServerResponse(data) {
-    // Example: Display the result URL
     if (Object.keys(data).length === 0) {
         console.log("No matches received from server:", data);
-        if (clipNum > 4) {
-            clearInterval(recordingIntervalId);
-            if (audioContext.state !== 'closed') {
-                audioContext.close();
-            }
-            noMatches()
-        }
+        checkIfDone();
     } else {
         console.log("Received data from server:", data)
         matchFound = true;
         clearInterval(recordingIntervalId);
         stream.getTracks().forEach(track => track.stop()); // Stop mic
         stopEqualizer();
+        if (audioContext && audioContext.state !== 'closed') {
+            audioContext.close();
+        }
+        document.getElementById("artwork").src = 'https://i1.sndcdn.com/artworks-' + data.artwork_path + '-t500x500.jpg';
+        document.getElementById("songURL").href = 'https://soundcloud.com/' + data.song_path;
+        document.getElementById("title").innerText = data.title;
+        document.getElementById("username").innerText = data.username;
+        document.getElementById("confidence").innerText = data.confidence;
+        document.getElementById("listening").style.display = "none";
+        document.getElementById("song-info").style.display = "block";
+        document.getElementById("get-id").style.display = "block";
+    }
+}
+
+function checkIfDone() {
+    responsesReceived++;
+    if (!matchFound && responsesReceived >= TOTAL_CLIPS) {
+        clearInterval(recordingIntervalId);
+        if (audioContext && audioContext.state !== 'closed') {
+            audioContext.close();
+        }
+        noMatches();
     }
 }
 
